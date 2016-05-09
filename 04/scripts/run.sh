@@ -17,3 +17,10 @@ if [ "$IS_HTTPD_RUNNING" == 'true' ]; then
 else
   service httpd start
 fi
+
+IS_TD_AGENT_RUNNING=$(is_running td-agent)
+if [ "$IS_TD_AGENT_RUNNING" == 'true' ]; then
+  service td-agent restart
+else
+  service td-agent start
+fi
