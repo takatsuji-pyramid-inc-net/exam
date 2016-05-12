@@ -6,10 +6,6 @@ set -eu
 # gcc-c++をyumインストール
 yum -y install gcc-c++
 
-# gitのソースを取得し、ビルド=>インストール
-#yum -y install autoconf perl-ExtUtils-MakeMaker
-# 中止 時間があまったらgitでキックスクリプトを管理したい
-
 # ユーザー、グループ、ディレクトリを作成する
 useradd -s /sbin/nologin nginx
 mkdir /var/run/nginx
@@ -40,7 +36,21 @@ tar zxvf zlib-1.2.8.tar.gz
 wget http://nginx.org/download/nginx-1.8.1.tar.gz
 tar zxvf nginx-1.8.1.tar.gz
 pushd ./nginx-1.8.1
-./configure --prefix=/usr/local/nginx --user=nginx --group=nginx --pid-path=/var/run/nginx/nginx.pid --lock-path=/var/run/nginx/nginx.lock --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --with-http_ssl_module --without-http_ssi_module --without-http_uwsgi_module --with-http_realip_module --with-pcre=/usr/local/src/pcre-8.38 --with-openssl=/usr/local/src/openssl-1.0.2h --with-zlib=/usr/local/src/zlib-1.2.8
+./configure \
+    --prefix=/usr/local/nginx \
+    --user=nginx \
+    --group=nginx \
+    --pid-path=/var/run/nginx/nginx.pid \
+    --lock-path=/var/run/nginx/nginx.lock \
+    --error-log-path=/var/log/nginx/error.log \
+    --http-log-path=/var/log/nginx/access.log \
+    --with-http_ssl_module \
+    --without-http_ssi_module \
+    --without-http_uwsgi_module \
+    --with-http_realip_module \
+    --with-pcre=/usr/local/src/pcre-8.38 \
+    --with-openssl=/usr/local/src/openssl-1.0.2h \
+    --with-zlib=/usr/local/src/zlib-1.2.8
 make
 make install
 popd
@@ -49,7 +59,6 @@ cp /var/setting_files/init_nginx /etc/init.d/nginx
 chmod +x /etc/init.d/nginx
 # confファイルを設定する
 cp /var/setting_files/nginx.conf /usr/local/nginx/conf/nginx.conf
-
 
 #============ apache ==============
 
@@ -79,7 +88,11 @@ popd
 wget http://ftp.jaist.ac.jp/pub/apache//httpd/httpd-2.4.20.tar.gz
 tar zxvf httpd-2.4.20.tar.gz
 pushd ./httpd-2.4.20
-./configure --prefix=/usr/local/httpd --with-apr=/usr/local/lib/apr --with-apr-util=/usr/local/lib/apr-util --with-pcre=/usr/local/lib/pcre
+./configure \
+    --prefix=/usr/local/httpd \
+    --with-apr=/usr/local/lib/apr \
+    --with-apr-util=/usr/local/lib/apr-util \
+    --with-pcre=/usr/local/lib/pcre
 make
 make install
 popd
@@ -91,5 +104,28 @@ cp /var/setting_files/httpd.conf /usr/local/httpd/conf/httpd.conf
 cp /var/setting_files/httpd-mpm.conf /usr/local/httpd/conf/extra/httpd-mpm.conf
 
 #============== php ================
+
+# libxml2でpythonのモジュールが必要なようなのでインストールしておく
+# python-develのソースからのインストール方法が分からなかったのでとりあえずyumでインストールする
+yum -y install python-devel
+# libxml2をインストールする
+wget http://xmlsoft.org/sources/libxml2-2.9.3.tar.gz
+tar zxvf libxml2-2.9.3.tar.gz
+pushd ./libxml2-2.9.3
+./configure --prefix=/usr/local/lib/libxml2
+make
+make install
+popd
+# make & install php
+wget http://www.php.net/get/php-5.6.21.tar.gz/from/jp2.php.net/mirror
+tar zxvf mirror
+pushd ./php-5.6.21
+./configure --prefix=/usr/local/php --with-apxs2=/usr/local/httpd/bin/apxs --with-libxml-dir=/usr/local/lib/libxml2
+make
+make install
+popd
+
+
+
 
 popd
