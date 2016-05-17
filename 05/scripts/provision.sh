@@ -1,31 +1,21 @@
 #!/bin/bash
 set -eu
 
-#source ./setenv.sh
-
 # gcc-c++をyumインストールする
 yum -y update
 yum -y install gcc-c++
 
 # ユーザー、グループ、ディレクトリを作成する
 grep '^nginx:' /etc/passwd > /dev/null || useradd -s /sbin/nologin nginx
-if [ ! -e /var/run/nginx ]; then
-    mkdir /var/run/nginx
-    chown nginx:nginx /var/run/nginx/
-fi
-if [ ! -e /var/log/nginx ]; then
-    mkdir /var/log/nginx
-    chown nginx:nginx /var/log/nginx/
-fi
+mkdir -p /var/run/nginx
+chown nginx:nginx /var/run/nginx/
+mkdir -p /var/log/nginx
+chown nginx:nginx /var/log/nginx/
 grep '^apache:' /etc/passwd > /dev/null || useradd -s /sbin/nologin apache
-if [ ! -e  /var/run/httpd ]; then
-    mkdir /var/run/httpd
-    chown apache:apache /var/run/httpd/
-fi
-if [ ! -e  /var/log/httpd ]; then
-    mkdir /var/log/httpd
-    chown apache:apache /var/log/httpd/
-fi
+mkdir -p /var/run/httpd
+chown apache:apache /var/run/httpd/
+mkdir -p /var/log/httpd
+chown apache:apache /var/log/httpd/
 
 # 各ミドルウェアをビルド、インストールする
 pushd /usr/local/src > /dev/null
