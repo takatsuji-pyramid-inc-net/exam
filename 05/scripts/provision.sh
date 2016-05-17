@@ -1,23 +1,14 @@
 #!/bin/bash
 set -eu
 
-# ユーザーが存在するか調べる
-function exists_user() {
-    if [ `grep "^$1:" /etc/passwd` == '' ]; then
-        echo 'false'
-    else
-        echo 'true'
-    fi
-}
+#source ./setenv.sh
 
 # gcc-c++をyumインストールする
-#yum -y update
+yum -y update
 yum -y install gcc-c++
 
 # ユーザー、グループ、ディレクトリを作成する
-if [ $( exists_user nginx ) == 'false' ]; then
-    useradd -s /sbin/nologin nginx
-fi
+grep '^nginx:' /etc/passwd > /dev/null || useradd -s /sbin/nologin nginx
 if [ ! -e /var/run/nginx ]; then
     mkdir /var/run/nginx
     chown nginx:nginx /var/run/nginx/
@@ -26,9 +17,7 @@ if [ ! -e /var/log/nginx ]; then
     mkdir /var/log/nginx
     chown nginx:nginx /var/log/nginx/
 fi
-if [ $( exists_user apache ) == 'false' ]; then
-    useradd -s /sbin/nologin apache
-fi
+grep '^apache:' /etc/passwd > /dev/null || useradd -s /sbin/nologin apache
 if [ ! -e  /var/run/httpd ]; then
     mkdir /var/run/httpd
     chown apache:apache /var/run/httpd/
@@ -158,9 +147,6 @@ cp /var/setting_files/httpd.conf /usr/local/httpd/conf/httpd.conf
 cp /var/setting_files/httpd-mpm.conf /usr/local/httpd/conf/extra/httpd-mpm.conf
 
 #============== php ================
-# libxml2でpythonのモジュールが必要なようなのでインストールしておく
-# python-develのソースからのインストール方法が分からなかったのでとりあえずyumでインストールする
-yum -y install python-devel
 # libxml2をインストールする
 if [ ! -e /usr/local/lib/libxml2 ]; then
     if [ ! -e ./libxml2-2.9.3 ]; then
@@ -169,7 +155,7 @@ if [ ! -e /usr/local/lib/libxml2 ]; then
         rm libxml2-2.9.3.tar.gz
     fi
     pushd ./libxml2-2.9.3 > /dev/null
-    ./configure --prefix=/usr/local/lib/libxml2
+    ./configure --prefix=/usr/local/lib/libxml2 --without-python
     make
     make install
     popd > /dev/null
@@ -189,3 +175,4 @@ if [ ! -e /usr/local/php ]; then
 fi
 
 popd > /dev/null    # popd from /usr/local/src
+
