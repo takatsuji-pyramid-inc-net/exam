@@ -3,7 +3,7 @@ set -eu
 
 # gcc-c++をyumインストールする
 yum -y update
-yum -y install gcc-c++
+yum -y install perl gcc-c++
 
 # ユーザー、グループ、ディレクトリを作成する
 grep '^nginx:' /etc/passwd > /dev/null || useradd -s /sbin/nologin nginx
