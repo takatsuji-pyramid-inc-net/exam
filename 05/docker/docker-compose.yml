@@ -1,0 +1,20 @@
+
+# apache + php
+httpd:
+ build: httpd
+ ports:
+  - "9000:80"
+ environment:
+  LISTEN_PORT: 80
+
+# nginx
+nginx:
+ build: nginx
+ ports:
+  - "8080:80"
+ links:
+  - httpd:httpd
+ environment:
+  LISTEN_PORT: 80
+  HTTPD_NAME: httpd
+
