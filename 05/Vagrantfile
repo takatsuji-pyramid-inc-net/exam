@@ -22,6 +22,7 @@ Vagrant.configure(2) do |config|
   config.vm.network :forwarded_port, guest: 8080, host: 5001
   config.vm.network :private_network, ip: $vm_ip
 
+  config.vm.synced_folder "./app", "/var/app", :type => "nfs"
   config.vm.synced_folder "./docker", "/var/docker", :type => "nfs"
 
   config.vm.provision :shell, path: "scripts/provision.sh"

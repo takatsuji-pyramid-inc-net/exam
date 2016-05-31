@@ -13,7 +13,6 @@ RUN apt-get update \
     && entrykit --symlink
 
 COPY ./apache2.conf.tmpl /etc/apache2/apache2.conf.tmpl
-COPY ./index.php /var/www/html/index.php
 
 ENTRYPOINT [ "render", "/etc/apache2/apache2.conf", "--", "apache2-foreground" ]
 

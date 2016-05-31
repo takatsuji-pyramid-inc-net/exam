@@ -13,7 +13,6 @@ RUN apt-get update \
     && entrykit --symlink
 
 COPY ./nginx.conf.tmpl /etc/nginx/nginx.conf.tmpl
-COPY ./assets /var/www/html/assets
 
 ENTRYPOINT [ "render", "/etc/nginx/nginx.conf", "--", "nginx", "-g", "daemon off;" ]
 

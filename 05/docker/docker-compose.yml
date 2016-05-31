@@ -6,6 +6,8 @@ httpd:
   - "9000:80"
  environment:
   LISTEN_PORT: 80
+ volumes:
+  - /var/app:/var/www/html
 
 # nginx
 nginx:
@@ -17,4 +19,6 @@ nginx:
  environment:
   LISTEN_PORT: 80
   HTTPD_NAME: httpd
+ volumes:
+  - /var/app:/var/www/html
 
