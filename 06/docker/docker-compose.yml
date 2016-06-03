@@ -10,8 +10,6 @@ wordpress:
  image: wordpress:4.5.2-fpm
  links:
   - mysql:mysql
- volumes:
-  - /wordpress:/var/www/html
 
 # nginx
 nginx:
