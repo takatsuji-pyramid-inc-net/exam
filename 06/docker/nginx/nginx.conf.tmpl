@@ -1,0 +1,51 @@
+user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+    server {
+        listen {{ var "LISTEN_PORT" | default "80" }};
+        server_name r_proxy_nginx.jp;
+        root /var/www/html;
+        index index.php index.html;
+    
+        location = /healthcheck {
+            add_header Content-Type text/plain;
+            return 200;
+        }
+
+        location ~ ^/index.php/(.+) {
+            rewrite /index.php/(.+) {{ var "ROOT_URL" | default "http://localhost" }}:{{ var "HOST_FORWARDED_PORT" | default "8080" }}/$1 redirect;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass {{ var "WORDPRESS_NAME" | default "wordpress" }}:{{ var "FASTCGI_PORT" | default "9000" }};
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_script_name;
+            include fastcgi_params;
+        }
+    
+   }
+}
+
