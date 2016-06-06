@@ -13,3 +13,13 @@ if [ ! -e /usr/bin/docker-compose ]; then
     mv ~/docker-compose /usr/bin/
 fi
 
+# wordpressをダウンロードする
+if [ ! -e /usr/local/src/wordpress ]; then
+    pushd /usr/local/src > /dev/null
+    wget https://ja.wordpress.org/wordpress-4.5.2-ja.tar.gz
+    tar zxvf wordpress-4.5.2-ja.tar.gz
+    rm wordpress-4.5.2-ja.tar.gz
+    cp -r wordpress/* /wordpress
+    popd > /dev/null
+fi
+

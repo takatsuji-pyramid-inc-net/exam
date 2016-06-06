@@ -39,7 +39,7 @@ http {
         }
 
         location ~ \.php$ {
-            fastcgi_pass {{ var "WORDPRESS_NAME" | default "wordpress" }}:{{ var "FASTCGI_PORT" | default "9000" }};
+            fastcgi_pass {{ var "FASTCGI_NAME" | default "phpfpm" }}:{{ var "FASTCGI_PORT" | default "9000" }};
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             fastcgi_param PATH_INFO $fastcgi_script_name;
