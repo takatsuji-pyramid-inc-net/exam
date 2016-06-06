@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$vm_ip = "192.168.5.100"
+$vm_memory = 1024
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "ubuntu/trusty64"
+
+  # Make exam simplify
+  config.vm.box_check_update = false
+  if Vagrant.has_plugin?("vagrant-vbguest") then
+    config.vbguest.auto_update = false
+  end
+
+  config.vm.provider :virtualbox do |v|
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    v.memory = $vm_memory
+  end
+
+  ## Port forwarding for Web app
+  config.vm.network :forwarded_port, guest: 80, host: 8080
+  config.vm.network :private_network, ip: $vm_ip
+
+  ## 課題06: このNFSの設定は変更しないでください
+  config.vm.synced_folder "./app", "/wordpress", :type => "nfs"
+end
